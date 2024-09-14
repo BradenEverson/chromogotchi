@@ -37,15 +37,8 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
 		switch messageType {
 		case websocket.TextMessage:
-			fmt.Println("Text")
-		case websocket.BinaryMessage:
-			fmt.Println("Binary")
-			if len(message) == 16 {
-				petId := string(message)
-				petName := string(message[16:])
-				allPets[petId] = makePet(petName)
-				fmt.Printf("New Pet %s with name %s\n", petId, petName)
-			}
+			// Deserialize into a request object
+
 		}
 
 		fmt.Printf("Received: %s\n", message)
@@ -61,7 +54,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/ws", handleWebSocket)
+	http.HandleFunc("/connection", handleWebSocket)
 	http.HandleFunc("/newpet", handleNewPetRequest)
 
 	fmt.Println("WebSocket server started on :7878")
