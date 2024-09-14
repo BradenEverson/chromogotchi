@@ -1,11 +1,18 @@
 {
   "manifest_version": 3,
-  "name": "Hello Extensions",
+  "name": "Chromogotchi",
   "description": "Base Level Extension",
   "version": "1.0",
   "action": {
-    "default_popup": "hello.html",
+    "default_popup": "index.html",
     "default_icon": "ahaha.png"
-  }
+  },
+  "permissions": [
+    "cookies",
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "http://localhost/*"
+  ]
 }
-
