@@ -1,14 +1,16 @@
 package main
 
 type Pet struct {
-	name      string
-	face      string
-	happiness float32
-	hunger    float32
+	name         string
+	happiness    float32
+	hunger       float32
+	wakefullness float32
+
+	depression float32
+	hungerRate float32
+	sleepyRate float32
 }
 
-var faces []string = []string{"👾"}
-
 func makePet(name string) Pet {
-	return Pet{name, faces[0], float32(100), float32(100)}
+	return Pet{name, 100.0, 100.0, 100.0, 0.5, 1.0, 2.5}
 }
