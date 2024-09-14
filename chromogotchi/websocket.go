@@ -101,6 +101,9 @@ func hanndlConnection(conn *websocket.Conn) {
 					break
 				}
 				responseData = buf.Bytes()
+            case "Get":
+                responseType = "Pet"
+                responseData = []byte(pet.name)
 			}
 
 			if responseType == "" {
