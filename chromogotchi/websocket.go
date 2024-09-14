@@ -3,10 +3,12 @@ package main
 import (
 	"bytes"
 	"encoding/binary"
+    "encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
@@ -17,7 +19,19 @@ var upgrader = websocket.Upgrader{
 }
 
 func handleNewPetRequest(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("New Pet Request")
+    newPetId := uuid.New().String()
+    newPet := makePet("Glong")
+
+    allPets[newPetId] = newPet
+
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
+
+    response := map[string]string {
+        "PetId": newPetId,
+    }
+
+    json.NewEncoder(w).Encode(response)
 }
 
 func handleWebSocket(w http.ResponseWriter, r *http.Request) {
@@ -28,7 +42,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
-	go hanndlConnection(conn)
+	hanndlConnection(conn)
 }
 
 func hanndlConnection(conn *websocket.Conn) {

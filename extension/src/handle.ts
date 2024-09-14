@@ -28,3 +28,24 @@ export async function newPet(): Promise<PetId | ErrorString> {
         return "Error reaching HTTP endpoint" as ErrorString
     }
 }
+
+export const socket = new WebSocket(HTTP_LOCATION + "/connection");
+
+socket.addEventListener("open", () => {
+    console.log("Connected to the WebSocket server.");
+});
+
+socket.addEventListener("message", (event) => {
+    console.log(event.data);
+    const data = JSON.parse(event.data);
+    console.log(data)
+});
+
+socket.addEventListener("close", () => {
+    console.log("Disconnected from the WebSocket server.");
+});
+
+socket.addEventListener("error", (error) => {
+    console.error("WebSocket error:", error);
+});
+
