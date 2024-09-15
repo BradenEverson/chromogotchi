@@ -124,6 +124,9 @@ func hanndlConnection(conn *websocket.Conn) {
 			} else {
 				log.Println("Error writing message:", err)
 			}
+        case websocket.CloseMessage:
+            log.Println("Gracefully closing websocket connection")
+            break
 		}
 
 	}

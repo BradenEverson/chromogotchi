@@ -9,7 +9,7 @@ import (
 
 const SLEEP_TIME = 120
 
-var allPets map[string]Pet
+var allPets map[string]Pet = make(map[string]Pet)
 
 func updatePetAttributes() {
 	for {

@@ -49,3 +49,13 @@ socket.addEventListener("error", (error) => {
     console.error("WebSocket error:", error);
 });
 
+window.addEventListener("beforeunload", () => {
+    socket.close();
+});
+
+let id = getCookie("PETID");
+if (!id) {
+    id = await newPet();
+}
+
+console.log(id)
