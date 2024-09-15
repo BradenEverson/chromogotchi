@@ -24,7 +24,7 @@ type Pet struct {
 
 func makePet() Pet {
 	var petSprite []byte
-    loc := rand.Intn(3);
+    loc := rand.Intn(3) + 1;
     nameLoc := rand.Intn(len(names) - 1)
 
     name := names[nameLoc]

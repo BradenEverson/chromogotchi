@@ -9,10 +9,15 @@ var id: string | null = null;
 const HTTP_LOCATION: string = "http://localhost:7878";
 
 const NAME: HTMLElement = document.getElementById("petName") as HTMLElement;
-const CANVAS: HTMLElement = document.getElementById("petCanvas") as HTMLElement;
+const CANVAS: HTMLCanvasElement = document.getElementById("petCanvas") as HTMLCanvasElement;
+CANVAS.width = 48;
+CANVAS.height = 48;
 
 var hunger: number, sleep: number, happiness: number;
 var sprite: Uint8Array;
+
+var x = CANVAS.width / 2
+var y = CANVAS.height / 2
 
 export function getCookie(name: string): PetId | null {
     const value = `; ${document.cookie}`;
@@ -49,7 +54,7 @@ socket.addEventListener("open", () => {
     if (id) {
         console.log(id);
         establish(id);
-        getPet();
+        querySomething("Get")
     }
 });
 
@@ -115,30 +120,15 @@ function establish(id: string) {
         data: Array.from(byteSizedId),
     };
     sendQuery(query);
+    querySomething("Play")
+    querySomething("Feed")
+    querySomething("Sleep")
+    querySomething("Get")
+    querySomething("Sprite")
 }
 
-function queryHunger() {
-    let query: RequestObject = { type: "Feed", data: [] };
-    sendQuery(query);
-}
-
-function queryHappiness() {
-    let query: RequestObject = { type: "Sleep", data: [] };
-    sendQuery(query);
-}
-
-function querySleep() {
-    let query: RequestObject = { type: "Play", data: [] };
-    sendQuery(query);
-}
-
-function getPet() {
-    let query: RequestObject = { type: "Get", data: [] };
-    sendQuery(query);
-}
-
-function getSprite() {
-    let query: RequestObject = { type: "Sprite", data: [] };
+function querySomething(thing: string) {
+    let query: RequestObject = { type: thing, data: [] };
     sendQuery(query);
 }
 
@@ -154,18 +144,31 @@ if (!id) {
 
 setInterval(() => {
     if (connected) {
-        queryHappiness();
-        queryHunger();
-        querySleep();
-        getSprite();
+        querySomething("Play")
+        querySomething("Feed")
+        querySomething("Sleep")
+        querySomething("Sprite")
+
     }
 }, 5000);
 
+let ctx = CANVAS.getContext("2d")
 setInterval(() => {
-    if (connected) {
+    if (connected && sprite && ctx) {
         /// Update the dude's position on the canvas
+        ctx.clearRect(0, 0, CANVAS.width, CANVAS.height)
+
+        const imageData = ctx.createImageData(16, 16);
+
+        for (let i = 0; i < sprite.length; i++) {
+            imageData.data[i] = sprite[i];
+        }
+
+        ctx.clearRect(0, 0, CANVAS.width, CANVAS.height);
+
+        ctx.putImageData(imageData, x, y);
     }
-}, 250);
+}, 10);
 
 export function base64ToUint8Array(base64: string): Uint8Array {
     const binaryString = atob(base64);
