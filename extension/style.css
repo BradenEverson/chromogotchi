@@ -39,6 +39,10 @@ body {
   border-radius: 10px;
 }
 
+#petName {
+  align-self: center;
+}
+
 #status {
   font-size: 14px;
   margin-top: 5px;

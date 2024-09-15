@@ -20,7 +20,7 @@ var upgrader = websocket.Upgrader{
 
 func handleNewPetRequest(w http.ResponseWriter, r *http.Request) {
 	newPetId := uuid.New().String()
-	newPet := makePet("Glong")
+	newPet := makePet()
 
 	allPets[newPetId] = newPet
 
@@ -78,7 +78,7 @@ func hanndlConnection(conn *websocket.Conn) {
 			_, exists := allPets[id]
 
             if !exists {
-                allPets[id] = makePet("Empty")
+                allPets[id] = makePet()
             }
 
             pet := allPets[id]
@@ -124,6 +124,11 @@ func hanndlConnection(conn *websocket.Conn) {
 
 				responseType = "Pet"
 				responseData = []byte(pet.name)
+            case "Sprite":
+                fmt.Println("\tGetting Current Sprite")
+
+                responseType = "Sprite"
+                responseData = pet.sprite
 			}
 
 			if responseType == "" {
