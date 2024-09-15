@@ -17,7 +17,7 @@ func makeRequestObject(reqtype string, data []byte) RequestObject {
 func deserializeRequestObject(data []byte) (*RequestObject, error) {
 	object := new(RequestObject)
 	err := json.Unmarshal(data, object)
-	if err != nil {
+	if err == nil {
 		return object, nil
 	} else {
 		return nil, errors.New("Failed to deserialize request")
