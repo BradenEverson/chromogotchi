@@ -15,10 +15,12 @@ func updatePetAttributes() {
 	for {
 		time.Sleep(SLEEP_TIME * time.Second)
 		fmt.Println("Updating...")
-		for _, pet := range allPets {
-			pet.hunger -= pet.hunger
-			pet.happiness -= pet.happiness
-			pet.wakefullness -= pet.wakefullness
+		for key, pet := range allPets {
+			pet.updateHunger(pet.hungerRate * -1)
+			pet.updateHappy(pet.depression * -1)
+			pet.updateSleep(pet.sleepyRate * -1)
+
+			allPets[key] = pet
 		}
 	}
 }

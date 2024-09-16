@@ -53,8 +53,6 @@ func hanndlConnection(conn *websocket.Conn) {
 			break
 		}
 
-        fmt.Println("Incoming message:", messageType)
-
 		switch messageType {
 		case websocket.TextMessage:
 			request, err := deserializeRequestObject(message)
@@ -63,12 +61,8 @@ func hanndlConnection(conn *websocket.Conn) {
 				break
 			}
 
-            fmt.Println(request)
-
 			if request.RequestType == "Establish" {
-				fmt.Println("Establishing connection")
 				id = string(request.Metadata)
-                fmt.Println(id)
 			}
 
 			if id == "" {
@@ -77,11 +71,12 @@ func hanndlConnection(conn *websocket.Conn) {
 
 			_, exists := allPets[id]
 
-            if !exists {
-                allPets[id] = makePet()
-            }
+			if !exists {
+				newPet := makePet()
+				allPets[id] = newPet
+			}
 
-            pet := allPets[id]
+			pet := allPets[id]
 
 			var responseType string
 			var responseData []byte
@@ -90,8 +85,6 @@ func hanndlConnection(conn *websocket.Conn) {
 
 			switch request.RequestType {
 			case "Feed":
-                fmt.Println("\t Feeding pet")
-
 				responseType = "Fed"
 				err := binary.Write(&buf, binary.LittleEndian, pet.hunger)
 				if err != nil {
@@ -100,8 +93,6 @@ func hanndlConnection(conn *websocket.Conn) {
 				}
 				responseData = buf.Bytes()
 			case "Sleep":
-                fmt.Println("\tLetting pet sleep")
-
 				responseType = "Slept"
 				err := binary.Write(&buf, binary.LittleEndian, pet.wakefullness)
 				if err != nil {
@@ -110,8 +101,6 @@ func hanndlConnection(conn *websocket.Conn) {
 				}
 				responseData = buf.Bytes()
 			case "Play":
-                fmt.Println("\tPlaying with pet")
-
 				responseType = "Happy"
 				err := binary.Write(&buf, binary.LittleEndian, pet.depression)
 				if err != nil {
@@ -120,15 +109,12 @@ func hanndlConnection(conn *websocket.Conn) {
 				}
 				responseData = buf.Bytes()
 			case "Get":
-                fmt.Println("\tGetting pet", pet)
-
 				responseType = "Pet"
 				responseData = []byte(pet.name)
-            case "Sprite":
-                fmt.Println("\tGetting Current Sprite")
+			case "Sprite":
 
-                responseType = "Sprite"
-                responseData = pet.sprite
+				responseType = "Sprite"
+				responseData = pet.getSprite()
 			}
 
 			if responseType == "" {

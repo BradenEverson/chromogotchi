@@ -1,13 +1,26 @@
 package main
 
 import (
+	"fmt"
 	"image/png"
 	"math/rand"
 	"os"
 	"strconv"
 )
 
-var names = []string{"Peter", "Glorb", "Jrog", "Silbert", "Skleve"}
+var names = []string{
+	"Blorbo", "Flern", "Zizzle", "Krungus", "Snorp", "Wibble", "Glef", "Plorn", "Zogbert", "Snerk",
+	"Glarn", "Vibbit", "Jorf", "Snibble", "Tronk", "Bibble", "Skibble", "Frong", "Jilbo", "Splork",
+	"Norf", "Dronk", "Skorb", "Flib", "Grundle", "Mibbit", "Splarn", "Gribble", "Norbit", "Wobbert",
+	"Plink", "Skrogg", "Tweb", "Jorb", "Zlorn", "Brindle", "Sklorm", "Flarn", "Globbo", "Trilk",
+	"Frob", "Snarg", "Zindle", "Cribble", "Gorf", "Brug", "Dribbit", "Slibber", "Flibble", "Kloof",
+	"Trog", "Glimp", "Borf", "Nimpl", "Fribbit", "Quorn", "Glibble", "Drong", "Spliff", "Gribber",
+	"Woggin", "Jubb", "Florp", "Drob", "Skorn", "Glimble", "Flung", "Wormp", "Trorb", "Flink",
+	"Brog", "Splim", "Zorp", "Nork", "Grob", "Flunk", "Skrob", "Glarn", "Prindle", "Brorf",
+	"Nubb", "Sklon", "Frigg", "Jimble", "Dragg", "Klarg", "Vibble", "Plog", "Splorb", "Wibber",
+	"Gronk", "Slibble", "Twirp", "Frogbert", "Blip", "Drongus", "Snig", "Blurg", "Twonk", "Splurb",
+	"Grilk", "Morb", "Klimp", "Jibble", "Peter", "Glorb", "Jrog", "Silbert", "Skleve",
+}
 
 type Pet struct {
 	name         string
@@ -15,7 +28,8 @@ type Pet struct {
 	hunger       float32
 	wakefullness float32
 
-	sprite []byte
+	sprite int
+	state  string
 
 	depression float32
 	hungerRate float32
@@ -23,16 +37,12 @@ type Pet struct {
 }
 
 func makePet() Pet {
-	var petSprite []byte
-    loc := rand.Intn(3) + 1;
-    nameLoc := rand.Intn(len(names) - 1)
+	loc := rand.Intn(3) + 1
+	nameLoc := rand.Intn(len(names) - 1)
 
-    name := names[nameLoc]
+	name := names[nameLoc]
 
-    // If fails, pet sprite is just blank
-    defaultPet(&petSprite, "sprites/" + strconv.Itoa(loc) + "/idle.png")
-
-	return Pet{name, 100.0, 100.0, 100.0, petSprite, 0.5, 1.0, 2.5}
+	return Pet{name, 100.0, 100.0, 100.0, loc, "idle", 1.5, 1.0, 2.5}
 }
 
 func defaultPet(arr *[]byte, path string) error {
@@ -66,4 +76,68 @@ func defaultPet(arr *[]byte, path string) error {
 	}
 
 	return nil
+}
+
+func (pet *Pet) getSprite() []byte {
+	var sprite []byte
+
+	state := pet.getUpdatedState()
+	path := "./sprites/" + strconv.Itoa(pet.sprite) + "/" + state + ".png"
+	defaultPet(&sprite, path)
+
+	return sprite
+}
+
+func (pet *Pet) updateHunger(newVal float32) {
+	pet.hunger += newVal
+	if pet.hunger <= 0 {
+		pet.hunger = 0
+	}
+}
+
+func (pet *Pet) updateSleep(newVal float32) {
+	pet.wakefullness += newVal
+	if pet.wakefullness <= 0 {
+		pet.wakefullness = 0
+	}
+
+}
+
+func (pet Pet) updateHappy(newVal float32) {
+	pet.happiness += newVal
+	if pet.happiness <= 0 {
+		pet.happiness = 0
+	}
+
+}
+
+func (pet Pet) getUpdatedState() string {
+	avg := (pet.wakefullness + pet.happiness + pet.hunger) / 3.0
+	fmt.Println(pet.wakefullness)
+	fmt.Println(pet.happiness)
+	fmt.Println(pet.hunger)
+
+	var state string
+
+	switch {
+	case avg == 0.0:
+		state = "dead"
+	case avg <= 10.0:
+		state = "dying"
+	case avg <= 30.0:
+		state = "bad"
+	case avg <= 50.0:
+		state = "sad"
+	case pet.wakefullness <= 30.0:
+		state = "tired"
+	case pet.happiness <= 30.0:
+		state = "depressed"
+	case pet.hunger <= 30.0:
+		state = "hungry"
+	default:
+		state = "idle"
+	}
+
+	pet.state = state
+	return pet.state
 }
