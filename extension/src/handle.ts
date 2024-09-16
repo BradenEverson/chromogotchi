@@ -6,7 +6,8 @@ type ErrorString = string;
 var connected = false;
 var id: string | null = null;
 
-var currObjective: Objective = [0, 0];
+var goTo = [randomCoords(), randomCoords()];
+var currObjective: Objective = "wander"
 
 const HTTP_LOCATION: string = "http://localhost:7878";
 
@@ -145,34 +146,41 @@ setInterval(() => {
     if (connected && sprite && ctx) {
         ctx.clearRect(0, 0, CANVAS.width, CANVAS.height);
 
-        if (Array.isArray(currObjective) && typeof currObjective[0] === 'number' && typeof currObjective[1] === 'number') {
-            const targetX = currObjective[0];
-            const targetY = currObjective[1];
+        const targetX = goTo[0];
+        const targetY = goTo[1];
 
-            const dx = targetX - x;
-            const dy = targetY - y;
+        const dx = targetX - x;
+        const dy = targetY - y;
 
-            const distance = Math.sqrt(dx * dx + dy * dy);
+        const distance = Math.sqrt(dx * dx + dy * dy);
 
-            if (distance > 0.1) {
+        if (distance > 0.1) {
 
-                const stepSize = 0.01;
-                x += (dx / distance) * stepSize;
-                y += (dy / distance) * stepSize;
+            const stepSize = 0.01;
+            x += (dx / distance) * stepSize;
+            y += (dy / distance) * stepSize;
 
-                const wobbleRange = 0.02;
-                x += (Math.random() - 0.5) * wobbleRange;
-                y += (Math.random() - 0.5) * wobbleRange;
+            const wobbleRange = 0.02;
+            x += (Math.random() - 0.5) * wobbleRange;
+            y += (Math.random() - 0.5) * wobbleRange;
 
 
-                const jumpProbability = 0.02;
-                if (Math.random() < jumpProbability) {
-                    const jumpSize = 2.0;
-                    x += (Math.random() - 0.5) * jumpSize;
-                    y += (Math.random() - 0.5) * jumpSize;
-                }
-            } else {
-                currObjective = [randomCoords(), randomCoords()]
+            const jumpProbability = 0.02;
+            if (Math.random() < jumpProbability) {
+                const jumpSize = 2.0;
+                x += (Math.random() - 0.5) * jumpSize;
+                y += (Math.random() - 0.5) * jumpSize;
+            }
+        } else {
+            switch (currObjective) {
+                case "wander":
+                    goTo = [randomCoords(), randomCoords()];
+                    break;
+                case "play":
+                    break;
+                case "feed":
+                    break;
+                case "sleep":
             }
         }
 

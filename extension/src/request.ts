@@ -9,4 +9,4 @@ export type ResponseObject = {
   data: string;
 };
 
-export type Objective = [number, number] | "sleep" | "eat" | ["play", [number, number]]
+export type Objective = "sleep" | "play" | "feed" | "wander"
