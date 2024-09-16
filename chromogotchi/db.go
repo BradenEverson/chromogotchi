@@ -42,35 +42,35 @@ func loadPetsFromMongo() error {
 		return errors.New("Client has not yet connected")
 	}
 
-    collection := client.Database(DATABASE).Collection(COLLECTION)
-    
-    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-    defer cancel()
+	collection := client.Database(DATABASE).Collection(COLLECTION)
 
-    cursor, err := collection.Find(ctx, bson.M{}, options.Find())
-    if err != nil {
-        return errors.New("Error retrieving pets from MongoDB")
-    }
-    defer cursor.Close(ctx)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-    allPets = make(map[string]Pet)
+	cursor, err := collection.Find(ctx, bson.M{}, options.Find())
+	if err != nil {
+		return errors.New("Error retrieving pets from MongoDB")
+	}
+	defer cursor.Close(ctx)
 
-    for cursor.Next(ctx) {
-        var pet Pet
-        if err := cursor.Decode(&pet); err != nil {
-            log.Println("Error decoding pet document:", err)
-            continue
-        }
-        
-        allPets[pet.Id] = pet
-    }
+	allPets = make(map[string]Pet)
 
-    if err := cursor.Err(); err != nil {
-        return errors.New("Error iterating")
-    }
+	for cursor.Next(ctx) {
+		var pet Pet
+		if err := cursor.Decode(&pet); err != nil {
+			log.Println("Error decoding pet document:", err)
+			continue
+		}
 
-    log.Println("Loaded pets from MongoDB:", allPets)
-    return nil
+		allPets[pet.Id] = pet
+	}
+
+	if err := cursor.Err(); err != nil {
+		return errors.New("Error iterating")
+	}
+
+	log.Println("Loaded pets from MongoDB:", allPets)
+	return nil
 }
 
 func savePetsToMongo() {
@@ -85,18 +85,20 @@ func savePetsToMongo() {
 		collection := client.Database(DATABASE).Collection(COLLECTION)
 		for _, pet := range allPets {
 			filter := bson.M{"id": pet.Id}
-            update := bson.M{
-                "$set": bson.M{
-                    "name":        pet.Name,
-                    "hunger":      pet.Hunger,
-                    "happiness":   pet.Happiness,
-                    "sleepiness":  pet.Wakefullness,
-                    "hungerRate":  pet.HungerRate,
-                    "depression":  pet.Depression,
-                    "sleepyRate":  pet.SleepyRate,
-                },
-            }
-            _, err := collection.UpdateOne(context.TODO(), filter, update, options.Update().SetUpsert(true))
+			update := bson.M{
+				"$set": bson.M{
+					"name":       pet.Name,
+					"hunger":     pet.Hunger,
+					"happiness":  pet.Happiness,
+					"sleepiness": pet.Wakefullness,
+					"hungerRate": pet.HungerRate,
+					"state":      pet.State,
+					"sprite":     pet.Sprite,
+					"depression": pet.Depression,
+					"sleepyRate": pet.SleepyRate,
+				},
+			}
+			_, err := collection.UpdateOne(context.TODO(), filter, update, options.Update().SetUpsert(true))
 			if err != nil {
 				log.Printf("Error saving pet %s: %v\n", pet.Id, err)
 			}

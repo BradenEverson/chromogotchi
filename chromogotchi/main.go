@@ -28,11 +28,11 @@ func updatePetAttributes() {
 func main() {
 	err := connectClient()
 	if err != nil {
-        log.Println("DB Connect Error, defaulting to empty pets:\n", err)
+		log.Println("DB Connect Error, defaulting to empty pets:\n", err)
 	} else {
-        loadPetsFromMongo()
-        go savePetsToMongo()
-    }
+		loadPetsFromMongo()
+		go savePetsToMongo()
+	}
 
 	http.HandleFunc("/connection", handleWebSocket)
 	http.HandleFunc("/newpet", handleNewPetRequest)
