@@ -87,15 +87,15 @@ func savePetsToMongo() {
 			filter := bson.M{"id": pet.Id}
 			update := bson.M{
 				"$set": bson.M{
-					"name":       pet.Name,
-					"hunger":     pet.Hunger,
-					"happiness":  pet.Happiness,
-					"sleepiness": pet.Wakefullness,
-					"hungerRate": pet.HungerRate,
-					"state":      pet.State,
-					"sprite":     pet.Sprite,
-					"depression": pet.Depression,
-					"sleepyRate": pet.SleepyRate,
+					"name":         pet.Name,
+					"hunger":       pet.Hunger,
+					"happiness":    pet.Happiness,
+					"wakefullness": pet.Wakefullness,
+					"hungerRate":   pet.HungerRate,
+					"state":        pet.State,
+					"sprite":       pet.Sprite,
+					"depression":   pet.Depression,
+					"sleepyRate":   pet.SleepyRate,
 				},
 			}
 			_, err := collection.UpdateOne(context.TODO(), filter, update, options.Update().SetUpsert(true))

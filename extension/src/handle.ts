@@ -22,8 +22,8 @@ const SLEEP: HTMLElement = document.getElementById("sleepButton") as HTMLElement
 
 var sprite: Uint8Array;
 
-var x = CANVAS.width / 2
-var y = CANVAS.height / 2
+var x = randomCoords();
+var y = randomCoords();
 
 export function getCookie(name: string): PetId | null {
     const value = `; ${document.cookie}`;
