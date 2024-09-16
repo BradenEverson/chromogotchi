@@ -9,7 +9,8 @@ var id: string | null = null;
 var goTo = [randomCoords(), randomCoords()];
 var currObjective: Objective = "wander"
 
-const HTTP_LOCATION: string = "http://localhost:7878";
+//const HTTP_LOCATION: string = "http://localhost:7878";
+const HTTP_LOCATION: string = "https://chromogotchi-32d490e078e9.herokuapp.com";
 
 const NAME: HTMLElement = document.getElementById("petName") as HTMLElement;
 const CANVAS: HTMLCanvasElement = document.getElementById("petCanvas") as HTMLCanvasElement;
