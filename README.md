@@ -32,7 +32,7 @@
    - Click "Load unpacked" and select the `extension` folder in the cloned repository.
 
 4. Running a local server:
-  - Once you have the TypeScript compiled and the chrome extension loaded, you can run the Go backend by `cd`ing into the `./chromogotochi` directory and running
+  - Once you have the TypeScript compiled and the chrome extension loaded, you can run the Go backend by `cd`ing into the `./chromogotchi` directory and running
     ```bash
       go run .
     ```
