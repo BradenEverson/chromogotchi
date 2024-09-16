@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -27,6 +28,10 @@ func updatePetAttributes() {
 
 func main() {
 	err := connectClient()
+    port := os.Getenv("PORT")
+    if port == "" {
+        port = "7878"
+    }
 	if err != nil {
 		log.Println("DB Connect Error, defaulting to empty pets:\n", err)
 	} else {
@@ -40,7 +45,7 @@ func main() {
 	fmt.Println("WebSocket server started on :7878")
 
 	go updatePetAttributes()
-	err = http.ListenAndServe(":7878", nil)
+	err = http.ListenAndServe(":" + port, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe error:", err)
 	}
