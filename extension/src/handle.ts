@@ -142,21 +142,12 @@ PLAY.addEventListener("click", () => {
 
 SLEEP.addEventListener("click", () => {
     currObjective = "sleep"
+    goTo = [randomCoords(), randomCoords()]
 })
 
 setInterval(() => {
     if (connected && sprite && ctx) {
         ctx.clearRect(0, 0, CANVAS.width, CANVAS.height);
-        switch (currObjective) {
-            case "play":
-                break;
-            case "feed":
-                ctx.fillRect(goTo[0], goTo[1], 2, 2)
-                break;
-            case "sleep":
-                break;
-        }
-
         const targetX = goTo[0];
         const targetY = goTo[1];
 
@@ -164,8 +155,9 @@ setInterval(() => {
         const dy = targetY - y;
 
         const distance = Math.sqrt(dx * dx + dy * dy);
+        let rotate = false
 
-        if (distance > 2) {
+        if (distance > 8) {
 
             const stepSize = 0.01;
             x += (dx / distance) * stepSize;
@@ -188,6 +180,18 @@ setInterval(() => {
                     goTo = [randomCoords(), randomCoords()];
                     break;
                 case "play":
+                    const jumpProbability = 0.05;
+                    if (Math.random() < jumpProbability) {
+                        const jumpHeight = 5.0;
+                        x += (Math.random() - 0.5) * jumpHeight;
+                        y += (Math.random() - 0.5) * jumpHeight;
+                        break;
+                    }
+                    let playResponse: RequestObject = {
+                        type: "Feed",
+                        data: f32ToBytes(0.05)
+                    };
+                    sendQuery(playResponse);
                     break;
                 case "feed":
                     let foodResponse: RequestObject = {
@@ -199,6 +203,12 @@ setInterval(() => {
                     goTo = [randomCoords(), randomCoords()];
                     break;
                 case "sleep":
+                    rotate = true
+                    let sleepyResponse: RequestObject = {
+                        type: "Sleep",
+                        data: f32ToBytes(0.5)
+                    };
+                    sendQuery(sleepyResponse);
             }
         }
 
@@ -208,9 +218,32 @@ setInterval(() => {
             imageData.data[i] = sprite[i];
         }
 
+        if (rotate) {
+            let rotated = rotateImageData90Degrees(imageData.data, 16, 16)
+            for (let i = 0; i < rotated.length; i++) {
+                imageData.data[i] = rotated[i];
+            }
+        }
+
 
         // Draw the sprite at the updated position
         ctx.putImageData(imageData, x, y);
+        switch (currObjective) {
+            case "play":
+                drawRedBall(ctx, goTo[0], goTo[1], 3);
+                break;
+            case "feed":
+                ctx.fillRect(goTo[0], goTo[1], 2, 2);
+                break;
+            case "sleep":
+                ctx.fillRect(goTo[0], goTo[1], 7, 4);
+                ctx.fillStyle = "white";
+                ctx.fillRect(goTo[0] + 1, goTo[1] + 1, 5, 2);
+                ctx.fillStyle = "black"
+                break;
+        }
+
+
     }
 }, 10);
 
@@ -258,4 +291,34 @@ export function f32ToBytes(float: number): [number, number, number, number] {
 
 function randomCoords() {
     return Math.random() * 32
+}
+
+function rotateImageData90Degrees(sprite: Uint8ClampedArray, width: number, height: number): Uint8ClampedArray {
+    const rotatedData = new Uint8ClampedArray(sprite.length);
+
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            const srcIndex = (y * width + x) * 4;
+
+            const newX = height - 1 - y;
+            const newY = x;
+            const destIndex = (newY * height + newX) * 4;
+
+            rotatedData[destIndex] = sprite[srcIndex];       // R
+            rotatedData[destIndex + 1] = sprite[srcIndex + 1]; // G
+            rotatedData[destIndex + 2] = sprite[srcIndex + 2]; // B
+            rotatedData[destIndex + 3] = sprite[srcIndex + 3]; // A
+        }
+    }
+
+    return rotatedData;
+}
+
+function drawRedBall(ctx: CanvasRenderingContext2D, x: number, y: number, radius: number) {
+    ctx.fillStyle = "red";
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.closePath();
+    ctx.fillStyle = "black";
 }
