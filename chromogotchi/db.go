@@ -62,7 +62,7 @@ func loadPetsFromMongo() error {
             continue
         }
         
-        allPets[pet.Name] = pet
+        allPets[pet.Id] = pet
     }
 
     if err := cursor.Err(); err != nil {

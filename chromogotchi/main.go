@@ -28,10 +28,11 @@ func updatePetAttributes() {
 func main() {
 	err := connectClient()
 	if err != nil {
-		log.Fatal("DB Connect Error: ", err)
-	}
-
-	loadPetsFromMongo()
+        log.Println("DB Connect Error, defaulting to empty pets:\n", err)
+	} else {
+        loadPetsFromMongo()
+        go savePetsToMongo()
+    }
 
 	http.HandleFunc("/connection", handleWebSocket)
 	http.HandleFunc("/newpet", handleNewPetRequest)
@@ -39,7 +40,6 @@ func main() {
 	fmt.Println("WebSocket server started on :7878")
 
 	go updatePetAttributes()
-	go savePetsToMongo()
 	err = http.ListenAndServe(":7878", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe error:", err)
