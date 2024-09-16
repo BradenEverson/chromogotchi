@@ -89,8 +89,9 @@ func hanndlConnection(conn *websocket.Conn) {
 				responseType = "Fed"
 
 				if len(request.Metadata) == 4 {
-					bits := binary.LittleEndian.Uint32(request.Metadata)
+					bits := binary.BigEndian.Uint32(request.Metadata)
 					foodAmount := math.Float32frombits(bits)
+                    fmt.Println(foodAmount)
 					pet.updateHunger(foodAmount)
 					allPets[id] = pet
 				}
@@ -105,7 +106,7 @@ func hanndlConnection(conn *websocket.Conn) {
 				responseType = "Slept"
 
 				if len(request.Metadata) == 4 {
-					bits := binary.LittleEndian.Uint32(request.Metadata)
+					bits := binary.BigEndian.Uint32(request.Metadata)
 					sleepAmount := math.Float32frombits(bits)
 					pet.updateSleep(sleepAmount)
 					allPets[id] = pet
@@ -121,7 +122,7 @@ func hanndlConnection(conn *websocket.Conn) {
 				responseType = "Happy"
 
 				if len(request.Metadata) == 4 {
-					bits := binary.LittleEndian.Uint32(request.Metadata)
+					bits := binary.BigEndian.Uint32(request.Metadata)
 					playAmount := math.Float32frombits(bits)
 					pet.updateHappy(playAmount)
 					allPets[id] = pet

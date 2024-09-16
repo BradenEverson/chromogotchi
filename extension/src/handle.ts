@@ -132,6 +132,7 @@ let ctx = CANVAS.getContext("2d")
 
 FEED.addEventListener("click", () => {
     currObjective = "feed"
+    goTo = [randomCoords(), randomCoords()];
 });
 
 PLAY.addEventListener("click", () => {
@@ -145,6 +146,15 @@ SLEEP.addEventListener("click", () => {
 setInterval(() => {
     if (connected && sprite && ctx) {
         ctx.clearRect(0, 0, CANVAS.width, CANVAS.height);
+        switch (currObjective) {
+            case "play":
+                break;
+            case "feed":
+                ctx.fillRect(goTo[0], goTo[1], 2, 2)
+                break;
+            case "sleep":
+                break;
+        }
 
         const targetX = goTo[0];
         const targetY = goTo[1];
@@ -154,7 +164,7 @@ setInterval(() => {
 
         const distance = Math.sqrt(dx * dx + dy * dy);
 
-        if (distance > 0.1) {
+        if (distance > 2) {
 
             const stepSize = 0.01;
             x += (dx / distance) * stepSize;
@@ -179,6 +189,13 @@ setInterval(() => {
                 case "play":
                     break;
                 case "feed":
+                    let foodResponse: RequestObject = {
+                        type: "Feed",
+                        data: f32ToBytes(10.0)
+                    };
+                    sendQuery(foodResponse);
+                    currObjective = "wander"
+                    goTo = [randomCoords(), randomCoords()];
                     break;
                 case "sleep":
             }
@@ -190,7 +207,6 @@ setInterval(() => {
             imageData.data[i] = sprite[i];
         }
 
-        ctx.clearRect(0, 0, CANVAS.width, CANVAS.height);
 
         // Draw the sprite at the updated position
         ctx.putImageData(imageData, x, y);
