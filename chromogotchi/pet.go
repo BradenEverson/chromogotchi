@@ -23,26 +23,27 @@ var names = []string{
 }
 
 type Pet struct {
-	name         string
-	happiness    float32
-	hunger       float32
-	wakefullness float32
+	Name         string  `bson:"name"`
+	Happiness    float32 `bson:"happiness"`
+	Hunger       float32 `bson:"hunger"`
+	Wakefullness float32 `bson:"wakefullness"`
 
-	sprite int
-	state  string
+	Sprite int    `bson:"sprite"`
+	State  string `bson:"state"`
 
-	depression float32
-	hungerRate float32
-	sleepyRate float32
+	Depression float32 `bson:"depression"`
+	HungerRate float32 `bson:"hungerRate"`
+	SleepyRate float32 `bson:"sleepyRate"`
+	Id         string  `bson:"id"`
 }
 
-func makePet() Pet {
+func makePet(id string) Pet {
 	loc := rand.Intn(3) + 1
 	nameLoc := rand.Intn(len(names) - 1)
 
 	name := names[nameLoc]
 
-	return Pet{name, 100.0, 100.0, 100.0, loc, "idle", 1.5, 1.0, 2.5}
+	return Pet{name, 100.0, 100.0, 100.0, loc, "idle", 1.5, 1.0, 2.5, id}
 }
 
 func defaultPet(arr *[]byte, path string) error {
@@ -82,40 +83,40 @@ func (pet *Pet) getSprite() []byte {
 	var sprite []byte
 
 	state := pet.getUpdatedState()
-	path := "./sprites/" + strconv.Itoa(pet.sprite) + "/" + state + ".png"
+	path := "./sprites/" + strconv.Itoa(pet.Sprite) + "/" + state + ".png"
 	defaultPet(&sprite, path)
 
 	return sprite
 }
 
 func (pet *Pet) updateHunger(newVal float32) {
-	pet.hunger += newVal
-	if pet.hunger <= 0 {
-		pet.hunger = 0
+	pet.Hunger += newVal
+	if pet.Hunger <= 0 {
+		pet.Hunger = 0
 	}
 }
 
 func (pet *Pet) updateSleep(newVal float32) {
-	pet.wakefullness += newVal
-	if pet.wakefullness <= 0 {
-		pet.wakefullness = 0
+	pet.Wakefullness += newVal
+	if pet.Wakefullness <= 0 {
+		pet.Wakefullness = 0
 	}
 
 }
 
 func (pet Pet) updateHappy(newVal float32) {
-	pet.happiness += newVal
-	if pet.happiness <= 0 {
-		pet.happiness = 0
+	pet.Happiness += newVal
+	if pet.Happiness <= 0 {
+		pet.Happiness = 0
 	}
 
 }
 
 func (pet Pet) getUpdatedState() string {
-	avg := (pet.wakefullness + pet.happiness + pet.hunger) / 3.0
-	fmt.Println(pet.wakefullness)
-	fmt.Println(pet.happiness)
-	fmt.Println(pet.hunger)
+	avg := (pet.Wakefullness + pet.Happiness + pet.Hunger) / 3.0
+	fmt.Println(pet.Wakefullness)
+	fmt.Println(pet.Happiness)
+	fmt.Println(pet.Hunger)
 
 	var state string
 
@@ -128,16 +129,16 @@ func (pet Pet) getUpdatedState() string {
 		state = "bad"
 	case avg <= 50.0:
 		state = "sad"
-	case pet.wakefullness <= 30.0:
+	case pet.Wakefullness <= 30.0:
 		state = "tired"
-	case pet.happiness <= 30.0:
+	case pet.Happiness <= 30.0:
 		state = "depressed"
-	case pet.hunger <= 30.0:
+	case pet.Hunger <= 30.0:
 		state = "hungry"
 	default:
 		state = "idle"
 	}
 
-	pet.state = state
-	return pet.state
+	pet.State = state
+	return pet.State
 }

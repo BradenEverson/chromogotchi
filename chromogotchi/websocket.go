@@ -21,7 +21,7 @@ var upgrader = websocket.Upgrader{
 
 func handleNewPetRequest(w http.ResponseWriter, r *http.Request) {
 	newPetId := uuid.New().String()
-	newPet := makePet()
+	newPet := makePet(newPetId)
 
 	allPets[newPetId] = newPet
 
@@ -73,7 +73,7 @@ func hanndlConnection(conn *websocket.Conn) {
 			_, exists := allPets[id]
 
 			if !exists {
-				newPet := makePet()
+				newPet := makePet(id)
 				allPets[id] = newPet
 			}
 
@@ -88,14 +88,14 @@ func hanndlConnection(conn *websocket.Conn) {
 			case "Feed":
 				responseType = "Fed"
 
-                if len(request.Metadata) == 4 {
-                    bits := binary.LittleEndian.Uint32(request.Metadata)
-                    foodAmount := math.Float32frombits(bits)
-                    pet.updateHunger(foodAmount)
-                    allPets[id] = pet
-                }
+				if len(request.Metadata) == 4 {
+					bits := binary.LittleEndian.Uint32(request.Metadata)
+					foodAmount := math.Float32frombits(bits)
+					pet.updateHunger(foodAmount)
+					allPets[id] = pet
+				}
 
-				err := binary.Write(&buf, binary.LittleEndian, pet.hunger)
+				err := binary.Write(&buf, binary.LittleEndian, pet.Hunger)
 				if err != nil {
 					fmt.Println(err.Error())
 					break
@@ -104,14 +104,14 @@ func hanndlConnection(conn *websocket.Conn) {
 			case "Sleep":
 				responseType = "Slept"
 
-                if len(request.Metadata) == 4 {
-                    bits := binary.LittleEndian.Uint32(request.Metadata)
-                    sleepAmount := math.Float32frombits(bits)
-                    pet.updateSleep(sleepAmount)
-                    allPets[id] = pet
-                }
+				if len(request.Metadata) == 4 {
+					bits := binary.LittleEndian.Uint32(request.Metadata)
+					sleepAmount := math.Float32frombits(bits)
+					pet.updateSleep(sleepAmount)
+					allPets[id] = pet
+				}
 
-				err := binary.Write(&buf, binary.LittleEndian, pet.wakefullness)
+				err := binary.Write(&buf, binary.LittleEndian, pet.Wakefullness)
 				if err != nil {
 					fmt.Println(err.Error())
 					break
@@ -120,14 +120,14 @@ func hanndlConnection(conn *websocket.Conn) {
 			case "Play":
 				responseType = "Happy"
 
-                if len(request.Metadata) == 4 {
-                    bits := binary.LittleEndian.Uint32(request.Metadata)
-                    playAmount := math.Float32frombits(bits)
-                    pet.updateHappy(playAmount)
-                    allPets[id] = pet
-                }
+				if len(request.Metadata) == 4 {
+					bits := binary.LittleEndian.Uint32(request.Metadata)
+					playAmount := math.Float32frombits(bits)
+					pet.updateHappy(playAmount)
+					allPets[id] = pet
+				}
 
-				err := binary.Write(&buf, binary.LittleEndian, pet.depression)
+				err := binary.Write(&buf, binary.LittleEndian, pet.Depression)
 				if err != nil {
 					fmt.Println(err.Error())
 					break
@@ -135,7 +135,7 @@ func hanndlConnection(conn *websocket.Conn) {
 				responseData = buf.Bytes()
 			case "Get":
 				responseType = "Pet"
-				responseData = []byte(pet.name)
+				responseData = []byte(pet.Name)
 			case "Sprite":
 
 				responseType = "Sprite"

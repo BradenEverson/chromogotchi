@@ -16,9 +16,9 @@ func updatePetAttributes() {
 		time.Sleep(SLEEP_TIME * time.Second)
 		fmt.Println("Updating...")
 		for key, pet := range allPets {
-			pet.updateHunger(pet.hungerRate * -1)
-			pet.updateHappy(pet.depression * -1)
-			pet.updateSleep(pet.sleepyRate * -1)
+			pet.updateHunger(pet.HungerRate * -1)
+			pet.updateHappy(pet.Depression * -1)
+			pet.updateSleep(pet.SleepyRate * -1)
 
 			allPets[key] = pet
 		}
@@ -26,13 +26,21 @@ func updatePetAttributes() {
 }
 
 func main() {
+	err := connectClient()
+	if err != nil {
+		log.Fatal("DB Connect Error: ", err)
+	}
+
+	loadPetsFromMongo()
+
 	http.HandleFunc("/connection", handleWebSocket)
 	http.HandleFunc("/newpet", handleNewPetRequest)
 
 	fmt.Println("WebSocket server started on :7878")
 
 	go updatePetAttributes()
-	err := http.ListenAndServe(":7878", nil)
+	go savePetsToMongo()
+	err = http.ListenAndServe(":7878", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe error:", err)
 	}
