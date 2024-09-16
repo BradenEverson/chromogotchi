@@ -48,14 +48,6 @@ body {
   margin-top: 5px;
 }
 
-.actions {
-  display: flex;
-  justify-content: space-around;
-  width: 100%;
-  position: absolute;
-  bottom: 15px;
-}
-
 button {
   background-color: #ffcccb;
   border: 2px solid #444;

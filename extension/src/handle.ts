@@ -1,10 +1,12 @@
-import { RequestObject, ResponseObject } from "./request";
+import { Objective, RequestObject, ResponseObject } from "./request";
 
 type PetId = string;
 type ErrorString = string;
 
 var connected = false;
 var id: string | null = null;
+
+var currObjective: Objective = [0, 0];
 
 const HTTP_LOCATION: string = "http://localhost:7878";
 
@@ -13,7 +15,10 @@ const CANVAS: HTMLCanvasElement = document.getElementById("petCanvas") as HTMLCa
 CANVAS.width = 48;
 CANVAS.height = 48;
 
-var hunger: number, sleep: number, happiness: number;
+const FEED: HTMLElement = document.getElementById("feedButton") as HTMLElement;
+const PLAY: HTMLElement = document.getElementById("playButton") as HTMLElement;
+const SLEEP: HTMLElement = document.getElementById("sleepButton") as HTMLElement;
+
 var sprite: Uint8Array;
 
 var x = CANVAS.width / 2
@@ -70,29 +75,6 @@ socket.addEventListener("message", (event) => {
         case "Sprite":
             sprite = dataToUint8Array;
             break;
-        case "Slept":
-            sleep = bytesToF32([
-                dataToUint8Array[0],
-                dataToUint8Array[1],
-                dataToUint8Array[2],
-                dataToUint8Array[3],
-            ]);
-            break;
-        case "Happy":
-            happiness = bytesToF32([
-                dataToUint8Array[0],
-                dataToUint8Array[1],
-                dataToUint8Array[2],
-                dataToUint8Array[3],
-            ]);
-            break;
-        case "Fed":
-            hunger = bytesToF32([
-                dataToUint8Array[0],
-                dataToUint8Array[1],
-                dataToUint8Array[2],
-                dataToUint8Array[3],
-            ]);
         default:
             break;
     }
@@ -120,9 +102,6 @@ function establish(id: string) {
         data: Array.from(byteSizedId),
     };
     sendQuery(query);
-    querySomething("Play")
-    querySomething("Feed")
-    querySomething("Sleep")
     querySomething("Get")
     querySomething("Sprite")
 }
@@ -144,19 +123,58 @@ if (!id) {
 
 setInterval(() => {
     if (connected) {
-        querySomething("Play")
-        querySomething("Feed")
-        querySomething("Sleep")
         querySomething("Sprite")
-
     }
-}, 5000);
+}, 15000);
 
 let ctx = CANVAS.getContext("2d")
+
+FEED.addEventListener("click", () => {
+
+});
+
+PLAY.addEventListener("click", () => {
+
+});
+
+SLEEP.addEventListener("click", () => {
+
+})
+
 setInterval(() => {
     if (connected && sprite && ctx) {
-        /// Update the dude's position on the canvas
-        ctx.clearRect(0, 0, CANVAS.width, CANVAS.height)
+        ctx.clearRect(0, 0, CANVAS.width, CANVAS.height);
+
+        if (Array.isArray(currObjective) && typeof currObjective[0] === 'number' && typeof currObjective[1] === 'number') {
+            const targetX = currObjective[0];
+            const targetY = currObjective[1];
+
+            const dx = targetX - x;
+            const dy = targetY - y;
+
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance > 0.1) {
+
+                const stepSize = 0.01;
+                x += (dx / distance) * stepSize;
+                y += (dy / distance) * stepSize;
+
+                const wobbleRange = 0.02;
+                x += (Math.random() - 0.5) * wobbleRange;
+                y += (Math.random() - 0.5) * wobbleRange;
+
+
+                const jumpProbability = 0.02;
+                if (Math.random() < jumpProbability) {
+                    const jumpSize = 2.0;
+                    x += (Math.random() - 0.5) * jumpSize;
+                    y += (Math.random() - 0.5) * jumpSize;
+                }
+            } else {
+                currObjective = [randomCoords(), randomCoords()]
+            }
+        }
 
         const imageData = ctx.createImageData(16, 16);
 
@@ -166,6 +184,7 @@ setInterval(() => {
 
         ctx.clearRect(0, 0, CANVAS.width, CANVAS.height);
 
+        // Draw the sprite at the updated position
         ctx.putImageData(imageData, x, y);
     }
 }, 10);
@@ -210,4 +229,8 @@ export function f32ToBytes(float: number): [number, number, number, number] {
     let fourth = view.getUint8(3);
 
     return [first, second, third, fourth];
+}
+
+function randomCoords() {
+    return Math.random() * 32
 }
