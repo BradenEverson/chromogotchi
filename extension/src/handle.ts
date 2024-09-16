@@ -131,15 +131,15 @@ setInterval(() => {
 let ctx = CANVAS.getContext("2d")
 
 FEED.addEventListener("click", () => {
-
+    currObjective = "feed"
 });
 
 PLAY.addEventListener("click", () => {
-
+    currObjective = "play"
 });
 
 SLEEP.addEventListener("click", () => {
-
+    currObjective = "sleep"
 })
 
 setInterval(() => {
