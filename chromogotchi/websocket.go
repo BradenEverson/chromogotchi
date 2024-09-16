@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -86,6 +87,12 @@ func hanndlConnection(conn *websocket.Conn) {
 			switch request.RequestType {
 			case "Feed":
 				responseType = "Fed"
+
+				bits := binary.LittleEndian.Uint32(request.Metadata)
+				foodAmount := math.Float32frombits(bits)
+				pet.updateHunger(foodAmount)
+				allPets[id] = pet
+
 				err := binary.Write(&buf, binary.LittleEndian, pet.hunger)
 				if err != nil {
 					fmt.Println(err.Error())
@@ -94,6 +101,12 @@ func hanndlConnection(conn *websocket.Conn) {
 				responseData = buf.Bytes()
 			case "Sleep":
 				responseType = "Slept"
+
+				bits := binary.LittleEndian.Uint32(request.Metadata)
+				sleepAmount := math.Float32frombits(bits)
+				pet.updateSleep(sleepAmount)
+				allPets[id] = pet
+
 				err := binary.Write(&buf, binary.LittleEndian, pet.wakefullness)
 				if err != nil {
 					fmt.Println(err.Error())
@@ -102,6 +115,12 @@ func hanndlConnection(conn *websocket.Conn) {
 				responseData = buf.Bytes()
 			case "Play":
 				responseType = "Happy"
+
+				bits := binary.LittleEndian.Uint32(request.Metadata)
+				playAmount := math.Float32frombits(bits)
+				pet.updateHappy(playAmount)
+				allPets[id] = pet
+
 				err := binary.Write(&buf, binary.LittleEndian, pet.depression)
 				if err != nil {
 					fmt.Println(err.Error())
