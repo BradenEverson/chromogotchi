@@ -7,7 +7,7 @@ var connected = false;
 var id: string | null = null;
 
 var goTo = [randomCoords(), randomCoords()];
-var currObjective: Objective = "wander"
+var currObjective: Objective = randomObjective();
 
 //const HTTP_LOCATION: string = "http://localhost:7878";
 const HTTP_LOCATION: string = "https://chromogotchi-32d490e078e9.herokuapp.com";
@@ -289,8 +289,19 @@ export function f32ToBytes(float: number): [number, number, number, number] {
     return [first, second, third, fourth];
 }
 
-function randomCoords() {
+function randomCoords(): number {
     return Math.random() * 32
+}
+
+function randomObjective(): Objective {
+    let choice = Math.random() * 100;
+    if (choice < 60) {
+        return "wander"
+    } else if (choice < 90) {
+        return "sleep"
+    } else {
+        return "play"
+    }
 }
 
 function rotateImageData90Degrees(sprite: Uint8ClampedArray, width: number, height: number): Uint8ClampedArray {
