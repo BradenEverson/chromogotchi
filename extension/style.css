@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 body {
-  font-family: "Arial", sans-serif;
+  font-family: "Press Start 2P", system-ui;
   background-color: #f1f1f1;
   margin: 0;
   padding: 0;
@@ -41,6 +43,7 @@ body {
 
 #petName {
   align-self: center;
+  font-size: 14px;
 }
 
 #status {
